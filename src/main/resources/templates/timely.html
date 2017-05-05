@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>服务器主动推送消息</title>
+</head>
+<body>
+<div>
+    <div id="msgDiv"></div>
+</div>
+<script src="sockjs.js"></script>
+<script src="stomp.min.js"></script>
+<script src="jquery-3.2.0.js"></script>
+<script>
+
+    $(function () {
+        connect();
+    });
+
+    var client = null;
+
+    function connect() {
+        var socket = new SockJS('/endpointWisely');
+        client = Stomp.over(socket);
+        client.connect({},function (frame) {
+            console.log('connected: ' + frame);
+            client.subscribe('/topic/', function (response) {
+                var msg = response.body;
+                $("#msgDiv").append(msg).append('<br/>');
+            });
+        });
+    }
+
+    function disconnect(){
+        if (client != null){
+            client.disconnect();
+        }
+        console.log('Disconnected.');
+    }
+
+</script>
+</body>
+</html>
